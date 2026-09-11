@@ -129,5 +129,70 @@
     }
   },1000);
 
+  // MOUSE RAGEBAIT PACK — proximity flee, ghost cursor, trail taunts, hover tax, click detector
+  let mouseX=innerWidth/2, mouseY=innerHeight/2, lastTrail=0, clickTimes=[];
+  document.addEventListener('mousemove',e=>{ mouseX=e.clientX; mouseY=e.clientY; },{passive:true});
+
+  // Ghost cursor: laggy decoy that haunts the dodge arena (native cursor hidden there)
+  const ghost=document.createElement('div');
+  ghost.id='ghost-cursor'; ghost.textContent='👆';
+  document.body.appendChild(ghost);
+  let gx=mouseX, gy=mouseY;
+  (function ghostLoop(){
+    gx+=(mouseX-gx)*0.18; gy+=(mouseY-gy)*0.18;
+    ghost.style.transform=`translate(${gx}px,${gy}px)`;
+    const hunting=$('screen-dodge')?.classList.contains('active');
+    ghost.style.opacity=hunting?'1':'0';
+    const arena=$('dodge-arena'); if(arena) arena.classList.toggle('hunting',!!hunting);
+    requestAnimationFrame(ghostLoop);
+  })();
+
+  // Proximity flee: the button runs BEFORE you touch it (reuses dodge logic + pity)
+  setInterval(()=>{
+    if(!$('screen-dodge')?.classList.contains('active')) return;
+    const b=$('btn-dodge'); if(!b || /tired/i.test(b.textContent)) return;
+    const r=b.getBoundingClientRect();
+    const d=Math.hypot(mouseX-(r.left+r.width/2), mouseY-(r.top+r.height/2));
+    if(d<90) b.dispatchEvent(new Event('mouseover'));
+  },120);
+
+  // Trail taunts: floating "nope"s follow fast mice at 35+ rage
+  const TRAILS=['nope','miss','slow','lol','lmao','so close','nah','beta?'];
+  document.addEventListener('mousemove',()=>{
+    const now=Date.now();
+    if(now-lastTrail<900 || (window._rage||0)<35 || !window._timeSec) return;
+    lastTrail=now;
+    const s=document.createElement('span');
+    s.className='trail-taunt';
+    s.textContent=TRAILS[Math.floor(Math.random()*TRAILS.length)];
+    s.style.left=mouseX+'px'; s.style.top=mouseY+'px';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),800);
+  },{passive:true});
+
+  // Hover tax: just HOVERING the coward button costs rage
+  setInterval(()=>{
+    const leave=$('btn-leave');
+    if(!leave||leave.dataset.tax) return;
+    leave.dataset.tax='1';
+    leave.addEventListener('mouseenter',()=>{
+      if(!$('screen-shame')?.classList.contains('active')) return;
+      if(typeof window.bumpRage==='function') window.bumpRage(1);
+      if(Math.random()<0.3 && typeof clippySay==='function') clippySay("Hovering won't save you, beta.");
+    });
+  },1000);
+
+  // Rapid-click detector: 6+ clicks/sec gets you mocked
+  document.addEventListener('click',()=>{
+    const now=Date.now();
+    clickTimes=clickTimes.filter(t=>now-t<1000); clickTimes.push(now);
+    if(clickTimes.length>=6){
+      clickTimes=[];
+      if(typeof window.bumpRage==='function') window.bumpRage(2);
+      if(typeof clippySay==='function') clippySay("WOW. Somebody's pressed. The button felt that.");
+      if(typeof window.spawnEvilPopup==='function') window.spawnEvilPopup('🖱️ Your mouse filed a complaint');
+    }
+  });
+
   console.log('%c rage.js loaded — good luck leaving ','background:red;color:white;font-size:16px');
 })();
