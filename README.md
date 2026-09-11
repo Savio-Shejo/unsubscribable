@@ -14,7 +14,7 @@ A newsletter you can never leave. UNSUBSCRIBABLE is a rage-bait browser game: 7 
 Unsubscribing from newsletters is far too easy. One click? Where's the commitment? Where's the drama?
 
 ### The Solution (that nobody asked for)
-A 7-stage unsubscribe flow with 47 fake microservices, pity systems that guarantee suffering (but never freedom), a rage meter with ranks from CALM 🧘 to CLIPPY HATER 👹, and a finale that subscribes you TWICE.
+A 7-stage unsubscribe flow with 47 fake microservices, pity systems that guarantee suffering (but never freedom), a rage meter with ranks from CALM 🧘 to CLIPPY HATER 👹, a finale that subscribes you TWICE — then reveals it was the tutorial and restarts harder. There is no winning. Best loop time is tracked for speedrunners of suffering.
 
 ## Technical Details
 ### Technologies/Components Used

@@ -2,6 +2,7 @@
 let rage = 0, moves = 0, startTime = null, timerInt = null;
 let guilt = 0, dodges = 0, captchaFails = 0, letterAttempts = 0;
 let soundOn = true, currentLevel = 0, gameStarted = false;
+let loops = 0, loopStart = Date.now(); // loops: completed runs. Winning is not on the menu.
 let sharedAudio = null;
 
 const $ = id => document.getElementById(id);
@@ -138,6 +139,7 @@ function startTimer(){
   if(gameStarted) return;
   gameStarted = true;
   startTime=Date.now();
+  loopStart=Date.now();
   timerInt=setInterval(()=>{
     const s=Math.floor((Date.now()-startTime)/1000);
     window._timeSec=s;
@@ -449,6 +451,39 @@ $('btn-ragequit').addEventListener('mouseenter',()=>{
   }
 });
 
+// PRESTIGE LOOP — there is no winning. Beat everything, get a diploma,
+// learn it was the tutorial, restart harder. Rage and timer never reset.
+function fmt(s){ return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; }
+function prestige(){
+  loops++;
+  CONFIG.cookieRespawnChance=Math.min(0.9,CONFIG.cookieRespawnChance+0.1);
+  resetRun();
+  toast(`PRESTIGE ${loops}: cookies respawn more now. You did this to yourself.`);
+  clippySay(`Prestige ${loops}. The tutorial was fun, right?`);
+}
+function resetRun(){
+  guilt=0; dodges=0; captchaFails=0; letterAttempts=0; pwFails=0; holdFails=0;
+  holdNeed=Math.max(CONFIG.holdMin,CONFIG.holdSeconds+loops*0.5);
+  $('guilt').textContent='0';
+  $('shame-text').textContent=shameMsgs[0];
+  const bl=$('btn-leave');
+  bl.style.fontSize=''; bl.style.opacity=''; bl.style.position=''; bl.style.left=''; bl.style.top='';
+  delete bl.dataset.armed;
+  $('btn-stay').style.transform='';
+  $('captcha-msg').textContent='';
+  const L=$('letter'); L.value='';
+  $('char-count').textContent='0'; $('char-lie').textContent='';
+  $('letter-bar').style.width='0%';
+  $('btn-letter').disabled=true; $('btn-letter').textContent='SUBMIT HEARTBREAK';
+  $('verdict').textContent='';
+  $('pw').value=''; $('pw-rules').innerHTML='';
+  $('btn-pw').disabled=true; $('pw-verdict').textContent='';
+  loopStart=Date.now();
+  renderHeadlines();
+  resetDodge();
+  show('screen-cookies', 1); spawnCookies();
+}
+
 // FINALE FAKE LOADING (with built-in gaslight, no rage.js race)
 let finaleGaslit = false;
 function runFake(){
@@ -500,11 +535,12 @@ function canvasConfetti(){
   })();
 }
 function showWin(){
-  clearInterval(timerInt);
+  // NOTE: timer is NOT cleared. Time never stops here.
   show('screen-win', 8);
-  const secs = window._timeSec || 0;
+  const loopSecs = Math.floor((Date.now()-loopStart)/1000);
+  window._lastLoopSecs = loopSecs;
   const finalRage = Math.floor(rage);
-  $('final-stats').textContent=`Survived in ${$('timer').textContent} with ${finalRage} rage clicks and ${moves} mouse wiggles.`;
+  $('final-stats').textContent=`Loop ${loops+1} survived in ${fmt(loopSecs)} (total suffering: ${$('timer').textContent}) with ${finalRage} rage clicks and ${moves} mouse wiggles.`;
   // 3 endings by rage rank — same hell, different trauma
   let ending='sike';
   if(finalRage < 15){
@@ -522,18 +558,21 @@ function showWin(){
     $('win-title').innerHTML='You are now subscribed <b>TWICE</b>.';
     $('win-flavor').textContent="Thanks for your loyalty. We've also subscribed your mom.";
   }
+  // ...and the punchline: that was just the tutorial.
+  $('win-flavor').textContent+=' PSYCH. That was the TUTORIAL. Prestige '+ (loops+1) +' awaits: same 7 levels, meaner cookies.';
+  $('btn-again').textContent=`START PRESTIGE ${loops+1} 🔁`;
   window._ending = ending;
-  // victims counter + best score (local only, no backend)
+  // victims counter + best LOOP (local only, no backend)
   try{
     const n=(parseInt(localStorage.getItem('unsubscribable-victims')||localStorage.getItem('unsub-hell-victims')||'0',10)||0)+1;
     localStorage.setItem('unsubscribable-victims', String(n));
     $('victims').textContent=`👻 ${n} soul${n===1?'':'s'} trapped on this machine.`;
     const best = JSON.parse(localStorage.getItem('unsubscribable-best') || localStorage.getItem('unsub-hell-best') || 'null');
-    if(!best || secs < best.secs){
-      localStorage.setItem('unsubscribable-best', JSON.stringify({secs, rage: finalRage}));
-      $('best-stats').textContent=`🏆 NEW BEST! Fastest escape: ${$('timer').textContent} / ${finalRage} rage.`;
+    if(!best || loopSecs < best.secs){
+      localStorage.setItem('unsubscribable-best', JSON.stringify({secs: loopSecs, rage: finalRage}));
+      $('best-stats').textContent=`🏆 NEW BEST! Fastest loop: ${fmt(loopSecs)} / ${finalRage} rage.`;
     } else {
-      $('best-stats').textContent=`Best escape on this machine: ${Math.floor(best.secs/60)}:${String(best.secs%60).padStart(2,'0')} / ${best.rage} rage.`;
+      $('best-stats').textContent=`Best loop on this machine: ${fmt(best.secs)} / ${best.rage} rage.`;
     }
   }catch(e){}
   confetti(); canvasConfetti(); fanfare();
@@ -542,10 +581,10 @@ function showWin(){
 function confetti(){
   for(let i=0;i<40;i++) setTimeout(()=>spawnPopup(["🎉","💌","📧","❌"][i%4]),i*80);
 }
-$('btn-again').onclick=()=>location.reload();
+$('btn-again').onclick=prestige;
 $('btn-share').onclick=async ()=>{
   const end = window._ending==='zen' ? 'ZEN ending 🧘' : window._ending==='feral' ? 'FERAL ending 🦍 (hired as Chief Rage Officer)' : 'classic SIKE ending 🎉';
-  const t=`I played UNSUBSCRIBABLE and got TRAPPED for ${$('timer').textContent} with ${Math.floor(rage)} rage — ${end}. I am now subscribed twice. Can you escape?`;
+  const t=`I played UNSUBSCRIBABLE and survived loop ${loops+1} in ${fmt(window._lastLoopSecs||0)} with ${Math.floor(rage)} rage — ${end}. There is no winning. Can you escape?`;
   try{
     if(navigator.clipboard?.writeText){ await navigator.clipboard.writeText(t); }
     else throw new Error('no-clipboard');
