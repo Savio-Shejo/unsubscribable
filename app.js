@@ -18,6 +18,18 @@ function toast(msg){
   t.textContent=msg; t.classList.remove('hidden');
   clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add('hidden'), 1800);
 }
+// Fullscreen on first interaction (browsers forbid it before a gesture,
+// so we hijack their very first tap — poetic). Re-enters if they Esc out.
+function goFullscreen(){
+  if(document.fullscreenElement || document.webkitFullscreenElement) return;
+  try{
+    const el=document.documentElement;
+    const p=el.requestFullscreen ? el.requestFullscreen() : el.webkitRequestFullscreen?.();
+    if(p && p.catch) p.catch(()=>{});
+  }catch(e){}
+}
+document.addEventListener('pointerdown',goFullscreen,{passive:true});
+document.addEventListener('keydown',goFullscreen);
 const taunts = [
   "Wow. Rude.", "Our CEO just felt that click.",
   "Clippy believes in you. To stay.",
