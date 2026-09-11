@@ -76,10 +76,10 @@ To redeploy after changes: `git add -A; git commit -m "rage"; git push` — Page
 ### Project Documentation
 For Software:
 # Screenshots (Add at least 3)
-![Level 1](screenshots/level1-cookies.png) *Cookie Hell — reject 5 cookies that respawn*
-![Level 3](screenshots/level3-dodge.png) *The unsubscribe button fleeing the cursor + ghost trail*
-![Finale](screenshots/finale-sike.png) *SIKE — subscribed twice + prestige offer*
-> Capture these during the event (Win+Shift+S) and drop them in a `screenshots/` folder.
+- [ ] Level 1 — Cookie Hell: 5 respawning cookies + Clippy taunt
+- [ ] Level 3 — the fleeing button mid-dodge + ghost trail
+- [ ] Finale — SIKE screen with prestige offer
+> Capture during the event (Win+Shift+S) and drop them in a `screenshots/` folder.
 
 # Diagrams
 ![Workflow](diagrams/flow.png) *Start → 7 levels (each with pity exit) → fake deploy (gaslight at 85%) → 1 of 3 rage endings → prestige loop. Clippy + rage meter observe everything.*
