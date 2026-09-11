@@ -1,1 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="UNSUBSCRIBABLE — the newsletter you can never leave. A rage-bait browser game." />
+<meta property="og:title" content="UNSUBSCRIBABLE — I tried to leave and got subscribed twice" />
+<meta property="og:description" content="7 rage levels. 3 endings. 0 ways out. You can check out anytime you like..." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📧</text></svg>" />
+<title>UNSUBSCRIBABLE — you can never leave</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">📧 <b>UNSUBSCRIBABLE</b> <span class="badge">SPAM ETERNAL</span></div>
+  <div class="stats">
+    <span>⏱️ <span id="timer">0:00</span></span>
+    <span>😡 Rage: <span id="rage">0</span> <span id="rage-rank" class="badge">CALM 🧘</span></span>
+    <span>🖱️ Moves: <span id="moves">0</span></span>
+  </div>
+</div>
+<div id="rage-meter"><div id="rage-fill"></div></div>
+<div id="vignette"></div>
+<div id="toast" class="toast hidden"></div>
+<canvas id="confetti"></canvas>
+<div class="levelbar" id="levelbar" aria-label="Progress">
+  <span data-lv="1" class="active">🍪</span><span data-lv="2">🥺</span><span data-lv="3">🏃</span><span data-lv="4">🤖</span><span data-lv="5">💔</span><span data-lv="6">🔑</span><span data-lv="7">🫳</span><span data-lv="8">🎉</span>
+</div>
 
+<div id="clippy" class="clippy hidden">
+  <div class="clippy-face">📎</div>
+  <div class="clippy-bubble" id="clippy-text">Looks like you're trying to leave...</div>
+</div>
+
+<main id="game">
+  <!-- START -->
+  <section id="screen-start" class="screen active">
+    <div class="newsletter">
+      <h1>🎉 CONGRATS! You've won our 1,000,000th newsletter!</h1>
+      <p>Dear Valued Inbox Clogger,</p>
+      <p>Here is today's <b>super relevant content</b>:</p>
+      <ul id="headlines">
+        <li>💎 10 Crypto Tips From Our CEO's Dog</li>
+        <li>🔥 Hot Singles In Your Spam Folder</li>
+        <li>🥗 Kale Will Fix Your Personality</li>
+      </ul>
+      <p class="tiny">Thanks for reading. We send 14 emails a day because we care.</p>
+      <p class="footer-links">
+        <a href="#" style="color:blue">Privacy</a> |
+        <a href="#" style="color:blue">Terms</a> |
+        <a href="#" id="link-unsub" class="unsub-link">unsubscribe</a>
+      </p>
+      <p class="hint">👆 (go ahead, try to click that tiny gray link)</p>
+    </div>
+  </section>
+
+  <!-- LEVEL 1: COOKIE HELL -->
+  <section id="screen-cookies" class="screen">
+    <h2>Level 1/7: Cookie Preferences 🍪</h2>
+    <p>We value your privacy. Please reject each cookie individually. There are only <span id="cookie-count">5</span> left. Forever.</p>
+    <div id="cookie-area"></div>
+    <div class="progress"><div id="cookie-bar"></div></div>
+  </section>
+
+  <!-- LEVEL 2: SHAME -->
+  <section id="screen-shame" class="screen">
+    <h2>Level 2/7: Are you sure? 🥺</h2>
+    <div class="shame-box">
+      <p id="shame-text">Unsubscribing makes Baby Clippy cry.</p>
+      <div class="shame-btns">
+        <button id="btn-stay" class="btn big-green">YES! KEEP SPAMMING ME!</button>
+        <button id="btn-leave" class="btn tiny-gray">no, i hate happiness</button>
+      </div>
+      <p><small>Guilt level: <span id="guilt">0</span>/4</small></p>
+    </div>
+  </section>
+
+  <!-- LEVEL 3: DODGE -->
+  <section id="screen-dodge" class="screen">
+    <h2>Level 3/7: Catch The Button 🏃</h2>
+    <p>Just click Unsubscribe. It's easy. <span id="dodge-count">Dodges: 0/5</span></p>
+    <div id="dodge-arena">
+      <button id="btn-dodge" class="btn dodge">UNSUBSCRIBE</button>
+    </div>
+  </section>
+
+  <!-- LEVEL 4: CAPTCHA -->
+  <section id="screen-captcha" class="screen">
+    <h2>Level 4/7: Prove You're Human 🤖</h2>
+    <p><b>Select all images with GOOD VIBES.</b> Our vibe-checker is 99.9% confused.</p>
+    <div id="captcha-grid" class="grid"></div>
+    <button id="btn-captcha" class="btn">VERIFY (definitely works first try)</button>
+    <p id="captcha-msg"></p>
+  </section>
+
+  <!-- LEVEL 5: BREAKUP LETTER -->
+  <section id="screen-letter" class="screen">
+    <h2>Level 5/7: Breakup Letter 💔</h2>
+    <p>Type <b>100 characters</b> explaining why you're leaving us. Minimum. We need closure.</p>
+    <textarea id="letter" rows="5" placeholder="Dear SpamMail, it's not me, it's you..." maxlength="600"></textarea>
+    <div class="progress slim"><div id="letter-bar"></div></div>
+    <p>Characters: <span id="char-count">0</span>/100 <span id="char-lie"></span></p>
+    <button id="btn-letter" class="btn" disabled>SUBMIT HEARTBREAK</button>
+    <p id="verdict" class="verdict"></p>
+  </section>
+
+  <!-- LEVEL 6: PASSWORD HELL -->
+  <section id="screen-password" class="screen">
+    <h2>Level 6/7: Unsubscribe Password 🔑</h2>
+    <p>Security! Create an <b>unsubscribe password</b> you'll never use again.</p>
+    <input id="pw" type="text" autocomplete="off" placeholder="e.g. hunter2..." style="width:100%;font-size:16px;padding:10px" maxlength="80" />
+    <ul id="pw-rules" class="rules"></ul>
+    <button id="btn-pw" class="btn" disabled>SET PASSWORD (good luck)</button>
+    <p id="pw-verdict" class="verdict"></p>
+  </section>
+
+  <!-- LEVEL 7: HOLD TO LEAVE -->
+  <section id="screen-hold" class="screen">
+    <h2>Level 7/7: Hold To Leave 🫳</h2>
+    <p>Press and <b>HOLD</b> the button for <span id="hold-need">3</span>s without letting go. Clippy will attack.</p>
+    <div class="progress big"><div id="hold-bar"></div></div>
+    <button id="btn-hold" class="btn big-green">HOLD TO UNSUBSCRIBE</button>
+    <p class="tiny">Releasing resets it. Pity: every fail makes it slightly shorter.</p>
+  </section>
+
+  <!-- FINALE TROLL -->
+  <section id="screen-finale" class="screen">
+    <h2>Processing unsubscription...</h2>
+    <div class="progress big"><div id="fake-bar"></div></div>
+    <p id="fake-msg">Contacting server...</p>
+  </section>
+
+  <!-- VICTORY (SIKE) -->
+  <section id="screen-win" class="screen">
+    <h1 id="win-emoji">🎉 SIKE! 🎉</h1>
+    <h2 id="win-title">You are now subscribed <b>TWICE</b>.</h2>
+    <p id="final-stats"></p>
+    <p id="best-stats" class="tiny"></p>
+    <p id="victims" class="tiny"></p>
+    <p id="win-flavor">Thanks for your loyalty. We've also subscribed your mom.</p>
+    <p id="sys-status" class="tiny">🟢 47/47 microservices operational (all useless) • uptime 99.99% • deploys on Fridays</p>
+    <button id="btn-again" class="btn big-green">UNSUBSCRIBE AGAIN?</button>
+    <button id="btn-share" class="btn">COPY BRAGGING RIGHTS 📋</button>
+  </section>
+</main>
+
+<div class="ragequit-bar">
+  <button id="btn-ragequit" class="btn rage">😤 RAGE QUIT</button>
+  <span id="taunt"></span>
+  <button id="btn-sound" class="btn small" aria-pressed="true" title="Toggle annoying sounds">🔊</button>
+</div>
+
+<div id="popups"></div>
+
+<script src="app.js"></script>
+<script src="rage.js"></script>
+</body>
+</html>
