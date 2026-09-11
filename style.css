@@ -64,6 +64,9 @@ body.shake{animation:shk .3s}
 #dodge-arena.hunting,#dodge-arena.hunting .btn{cursor:none}
 .trail-taunt{position:fixed;z-index:95;pointer-events:none;font-weight:bold;color:#f00;font-size:13px;transform:translate(-50%,-140%);animation:trailfade .8s forwards}
 @keyframes trailfade{to{opacity:0;transform:translate(-50%,-260%)}}
+.ghost-trail{position:fixed;z-index:94;pointer-events:none;font-size:22px;animation:trailfade .7s forwards}
+.wiggle{animation:wig .5s}
+@keyframes wig{20%{transform:rotate(-8deg) scale(1.1)}45%{transform:rotate(6deg)}70%{transform:rotate(-4deg)}}
 .progress.slim{height:8px}
 #letter-bar{width:0}
 .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:20px;z-index:150;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,.4);transition:opacity .3s}

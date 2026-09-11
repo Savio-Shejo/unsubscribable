@@ -7,8 +7,8 @@ let sharedAudio = null;
 const $ = id => document.getElementById(id);
 // Tuning config — tweak the cruelty here
 const CONFIG = {
-  cookiesTotal: 5, cookieRespawnChance: 0.4,
-  guiltNeeded: 4, dodgesNeeded: 5, dodgePityAt: 12,
+  cookiesTotal: 5, cookieRespawnChance: 0.55,
+  guiltNeeded: 5, dodgesNeeded: 5, dodgePityAt: 12,
   captchaFailsNeeded: 3, letterMin: 100, letterMax: 600,
   pwPityAt: 3, holdSeconds: 3, holdPityStep: 0.4, holdMin: 1.5,
 };
@@ -30,6 +30,32 @@ function goFullscreen(){
 }
 document.addEventListener('pointerdown',goFullscreen,{passive:true});
 document.addEventListener('keydown',goFullscreen);
+// TYPING CHAOS — Clippy's autocorrect™ mangles words as you type
+const WRONG_WORDS = {
+  'the':'teh','you':'u','your':'ur','please':'pls','unsubscribe':'subscribe',
+  'leave':'stay','want':'wnat','because':'becuase','sorry':'sowwy','never':'nevar',
+  'spam':'ham','stop':'start','hate':'love','very':'vary','actually':'akshually',
+  'definitely':'definately','good':'god','email':'e-mail (certified)',
+};
+function chaosType(el){
+  const v=el.value;
+  if(!v || Math.random()>0.45) return;
+  const m=v.match(/^(.*\s)?([A-Za-z'()-]+)(\s)$/);
+  if(!m) return;
+  const head=m[1]||'', word=m[2], tail=m[3];
+  const low=word.toLowerCase();
+  let out=null;
+  if(WRONG_WORDS[low] && Math.random()<0.6) out=WRONG_WORDS[low];
+  else if(word.length>4 && Math.random()<0.5){
+    const i=Math.floor(Math.random()*(word.length-1));
+    out=word.slice(0,i)+word[i+1]+word[i]+word.slice(i+2); // letter swap
+  } else if(Math.random()<0.3) out=word.toUpperCase(); // SHOUTING
+  if(out && out!==word){
+    el.value=head+out+tail;
+    el.selectionStart=el.selectionEnd=el.value.length;
+    if(Math.random()<0.4) spawnPopup('✏️ Autocorrect™ improved that for you');
+  }
+}
 const taunts = [
   "Wow. Rude.", "Our CEO just felt that click.",
   "Clippy believes in you. To stay.",
@@ -88,7 +114,7 @@ function bumpRage(n=1){
   rage+=n; window.rage=rage; window._rage=Math.floor(rage);
   $('rage').textContent=Math.floor(rage);
   $('taunt').textContent = taunts[Math.floor(Math.random()*taunts.length)];
-  if(Math.random()<0.35) clippySay(clippyLines[Math.floor(Math.random()*clippyLines.length)]);
+  if(Math.random()<0.5) clippySay(clippyLines[Math.floor(Math.random()*clippyLines.length)]);
   if(typeof window.__onRage === 'function'){ try{ window.__onRage(n); }catch(e){} }
 }
 window.bumpRage = bumpRage;
@@ -179,11 +205,13 @@ const shameMsgs=[
   "Unsubscribing makes Baby Clippy cry.",
   "Wow. After everything we've spammed for you?",
   "Your grandma stayed subscribed. Just saying.",
-  "Last chance. We'll send FEWER emails. Like 13/day instead of 14."
+  "Last chance. We'll send FEWER emails. Like 13/day instead of 14.",
+  "Sharma ji ka beta reads EVERY email. Be like Sharma ji ka beta.",
+  "Clippy printed your photo and put it on the fridge. Of shame."
 ];
 $('btn-stay').onclick=()=>{
   bumpRage(2);
-  spawnPopup("❤️ Smart choice! +10 spam added!");
+  spawnPopup(["❤️ Smart choice! +10 spam added!","❤️ Mmm, obedience. +10 spam!","❤️ Clippy just smiled. Terrifying. +10 spam!"][Math.floor(Math.random()*3)]);
   clippySay("YESS! Stay! STAY FOREVER!");
 };
 $('btn-leave').onclick=()=>{
@@ -264,6 +292,7 @@ $('btn-captcha').onclick=()=>{
   captchaFails++; bumpRage(2); beep();
   if(captchaFails<CONFIG.captchaFailsNeeded){
     $('captcha-msg').textContent=`❌ WRONG. Our vibe-checker says those vibes are ${["mid","sus","rancid","illegal in Ohio"][captchaFails-1]}. Try again.`;
+    spawnPopup(["🧠 The grid rearranged itself. Rude.","🤖 Even the robot is judging you now."][captchaFails%2]);
     // shuffle to be extra annoying
     buildCaptcha();
   } else {
@@ -272,19 +301,20 @@ $('btn-captcha').onclick=()=>{
   }
 };
 
-// LEVEL 5 LETTER - deletes letters randomly
+// LEVEL 5 LETTER - deletes letters + mangles words randomly
 $('letter').addEventListener('input',e=>{
   let v=e.target.value;
-  if(Math.random()<0.15 && v.length>5){
+  if(Math.random()<0.25 && v.length>5){
     v=v.slice(0,Math.floor(Math.random()*v.length))+v.slice(Math.floor(Math.random()*v.length)+1);
     e.target.value=v;
     spawnPopup("✏️ Autocorrect fixed that for you (deleted a letter)");
-  }
+  } else chaosType(e.target);
+  v=e.target.value;
   const len=v.length;
   // lying counter: sometimes shows less
   const shown = Math.random()<0.2 ? Math.max(0,len-7) : len;
   $('char-count').textContent=shown;
-  $('char-lie').textContent = len>20&&Math.random()<0.3 ? "(probably)" : "";
+  $('char-lie').textContent = len>20&&Math.random()<0.5 ? "(probably)" : "";
   $('btn-letter').disabled = len<CONFIG.letterMin;
   const bar=$('letter-bar'); if(bar) bar.style.width=Math.min(len/CONFIG.letterMin*100,100)+'%';
   if(len>=100) $('verdict').textContent='';
@@ -339,7 +369,7 @@ function checkPw(){
   $('btn-pw').disabled=!allOk;
   return allOk;
 }
-$('pw').addEventListener('input',()=>{ checkPw(); });
+$('pw').addEventListener('input',e=>{ chaosType(e.target); checkPw(); });
 $('btn-pw').onclick=()=>{
   if(!checkPw()){
     pwFails++; bumpRage(2);
@@ -368,7 +398,7 @@ function holdDown(e){
     if(typeof window.spawnEvilPopup==='function') window.spawnEvilPopup('🫳 LET GO. You want to let go.');
     else spawnPopup('🫳 LET GO. You want to let go.');
     if(Math.random()<0.5) clippySay(['Keep holding... or else.','Your finger is shaking.','Almost... NOT.','Don\'t you dare finish.'][Math.floor(Math.random()*4)]);
-  },800);
+  },600);
   holdTimer=setInterval(()=>{
     const held=(Date.now()-holdStart)/1000;
     $('hold-bar').style.width=Math.min(held/holdNeed*100,100)+'%';

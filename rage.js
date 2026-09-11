@@ -46,7 +46,7 @@
     x.className='fake-x'; x.textContent='X';
     x.onclick=(e)=>{ e.stopPropagation(); p.remove();
       if(typeof window.bumpRage==='function') window.bumpRage(1);
-      if(Math.random()<0.35){ spawnEvilPopup('❌ You missed! +1 popup'); spawnEvilPopup('❌ Oops! It multiplied'); }
+      if(Math.random()<0.45){ spawnEvilPopup('❌ You missed! +1 popup'); spawnEvilPopup('❌ Oops! It multiplied'); }
     };
     const s=document.createElement('span'); s.textContent=text;
     p.appendChild(x); p.appendChild(s);
@@ -59,7 +59,7 @@
   document.addEventListener('mousemove', ()=>{ lastMove = Date.now(); }, {passive:true});
   setInterval(()=>{
     if(!window._timeSec) return; // game not started
-    if(Date.now()-lastMove > 12000){
+    if(Date.now()-lastMove > 8000){
       lastMove = Date.now();
       spawnEvilPopup('👀 Still there? We missed you. Have some spam.');
       if(typeof clippySay==='function') clippySay('AFK? Bold. The spam kept going without you.');
@@ -79,7 +79,7 @@
 
   // FAKE WINDOWS UPDATE modal once mid-game (after ~45s)
   setInterval(()=>{
-    if(modalShown || !window._timeSec || window._timeSec < 40) return;
+    if(modalShown || !window._timeSec || window._timeSec < 30) return;
     modalShown = true;
     const m = document.createElement('div');
     m.className='fake-modal';
@@ -153,14 +153,14 @@
     const b=$('btn-dodge'); if(!b || /tired/i.test(b.textContent)) return;
     const r=b.getBoundingClientRect();
     const d=Math.hypot(mouseX-(r.left+r.width/2), mouseY-(r.top+r.height/2));
-    if(d<90) b.dispatchEvent(new Event('mouseover'));
+    if(d<120) b.dispatchEvent(new Event('mouseover'));
   },120);
 
   // Trail taunts: floating "nope"s follow fast mice at 35+ rage
-  const TRAILS=['nope','miss','slow','lol','lmao','so close','nah','beta?'];
+  const TRAILS=['nope','miss','slow','lol','lmao','so close','nah','beta?','weak','cry'];
   document.addEventListener('mousemove',()=>{
     const now=Date.now();
-    if(now-lastTrail<900 || (window._rage||0)<35 || !window._timeSec) return;
+    if(now-lastTrail<700 || (window._rage||0)<25 || !window._timeSec) return;
     lastTrail=now;
     const s=document.createElement('span');
     s.className='trail-taunt';
@@ -186,12 +186,65 @@
   document.addEventListener('click',()=>{
     const now=Date.now();
     clickTimes=clickTimes.filter(t=>now-t<1000); clickTimes.push(now);
-    if(clickTimes.length>=6){
+    if(clickTimes.length>=5){
       clickTimes=[];
       if(typeof window.bumpRage==='function') window.bumpRage(2);
       if(typeof clippySay==='function') clippySay("WOW. Somebody's pressed. The button felt that.");
       if(typeof window.spawnEvilPopup==='function') window.spawnEvilPopup('🖱️ Your mouse filed a complaint');
     }
+  });
+
+  // STAY MAGNET: the green button leans toward your cursor. It wants you.
+  document.addEventListener('mousemove',e=>{
+    const stay=$('btn-stay');
+    if(!stay || !$('screen-shame')?.classList.contains('active')){ if(stay) stay.style.translate=''; return; }
+    const r=stay.getBoundingClientRect();
+    const dx=e.clientX-(r.left+r.width/2), dy=e.clientY-(r.top+r.height/2);
+    const d=Math.hypot(dx,dy);
+    if(d<260 && d>40) stay.style.translate=`${(dx/d*10).toFixed(1)}px ${(dy/d*8).toFixed(1)}px`;
+    else stay.style.translate='';
+  },{passive:true});
+
+  // DODGE AFTERIMAGES: the button leaves taunting ghosts as it flees
+  let lastDodgePos=null;
+  setInterval(()=>{
+    if(!$('screen-dodge')?.classList.contains('active')) return;
+    const b=$('btn-dodge'); if(!b) return;
+    const r=b.getBoundingClientRect(), x=r.left, y=r.top;
+    if(lastDodgePos && Math.hypot(x-lastDodgePos.x,y-lastDodgePos.y)>40){
+      const g=document.createElement('span');
+      g.className='ghost-trail'; g.textContent='💨';
+      g.style.left=lastDodgePos.x+'px'; g.style.top=lastDodgePos.y+'px';
+      document.body.appendChild(g);
+      setTimeout(()=>g.remove(),700);
+      if(Math.random()<0.3 && typeof window.bumpRage==='function') window.bumpRage(1);
+    }
+    lastDodgePos={x,y};
+  },200);
+
+  // ZOOMIES DETECTOR: fling your mouse, get mocked
+  let lastZX=0,lastZY=0,lastZT=0,zoomieCD=0;
+  document.addEventListener('mousemove',e=>{
+    const now=Date.now();
+    if(lastZT && now-lastZT<60){
+      const v=Math.hypot(e.clientX-lastZX,e.clientY-lastZY)/Math.max(now-lastZT,1);
+      if(v>2.2 && now>zoomieCD && window._timeSec){
+        zoomieCD=now+4000;
+        spawnEvilPopup('💨 ZOOMIES DETECTED. Calm down, beta.');
+        if(typeof window.bumpRage==='function') window.bumpRage(2);
+      }
+    }
+    lastZX=e.clientX; lastZY=e.clientY; lastZT=now;
+  },{passive:true});
+
+  // CAPTCHA TILES ARE SHY: hover one and it wiggles + judges you
+  document.addEventListener('mouseover',e=>{
+    const t=e.target?.closest?.('#captcha-grid div');
+    if(!t || t.dataset.shy) return;
+    t.dataset.shy='1';
+    t.classList.add('wiggle');
+    setTimeout(()=>{ t.classList.remove('wiggle'); delete t.dataset.shy; },600);
+    if(Math.random()<0.25 && typeof clippySay==='function') clippySay("Don't touch the vibes. Just pick them.");
   });
 
   console.log('%c rage.js loaded — good luck leaving ','background:red;color:white;font-size:16px');
