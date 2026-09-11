@@ -598,5 +598,29 @@ $('btn-ragequit').onclick=()=>{
   spawnPopup("🚫 Rage quit blocked. Quitting is for quitters.");
   clippySay("Rage quit? In THIS economy?");
 };
+// Spam News ticker (pure flavor, zero freedom)
+const TICKER_EXTRA = ["BREAKING: unsubscribe button files for divorce","WEATHER: 100% chance of spam","SPORTS: local man loses to button 5-0","MARKET: rage up 400%, analysts baffled","MISSING: one (1) exit link. Reward: none"];
+function startTicker(){
+  const el=$('ticker-text'); if(!el) return;
+  const items=[...HEADLINES.map(h=>`📰 ${h}`),...TICKER_EXTRA];
+  let i=0;
+  el.textContent=items[0];
+  setInterval(()=>{ i++; el.textContent=items[i%items.length]; },4000);
+}
+// Konami code: the reward is nothing. Stylish nothing.
+const KONAMI=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let konamiIdx=0;
+document.addEventListener('keydown',e=>{
+  konamiIdx=(e.key===KONAMI[konamiIdx])?konamiIdx+1:(e.key===KONAMI[0]?1:0);
+  if(konamiIdx>=KONAMI.length){
+    konamiIdx=0; bumpRage(5);
+    toast('KONAMI ACCEPTED. Reward: nothing. Stylish nothing.');
+    clippySay('A cheater? In MY newsletter? Iconic.');
+    for(let k=0;k<10;k++) setTimeout(()=>spawnPopup(['🌟','⭐','✨'][k%3]+' CHEAT CONFETTI'),k*90);
+    const rank=$('rage-rank');
+    if(rank){ const old=rank.textContent; rank.textContent='CHEATER 🌟'; setTimeout(()=>{ if(rank.textContent==='CHEATER 🌟') rank.textContent=old; },10000); }
+  }
+});
 renderHeadlines();
+startTicker();
 updateLevels();

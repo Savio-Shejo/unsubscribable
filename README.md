@@ -13,7 +13,20 @@
 |---|---|---|---|---|---|---|
 | rejects respawn | STAY grows | proximity flee + ghost cursor | always wrong twice | `hate` → `love` | emoji + Roman numeral + no "e" | Clippy attacks at 600ms |
 
-Beat it all? **PSYCH — that was the tutorial.** Prestige loop restarts harder, forever. 3 endings by rage: 🧘 ZEN / 🎉 SIKE / 🦍 FERAL (hired as Chief Rage Officer).
+Beat it all? **PSYCH — that was the tutorial.** Prestige loop restarts harder, forever.
+
+### 🏁 The 3 Endings (rage decides)
+| Rage | Ending | What happens |
+|---|---|---|
+| <15 | 🧘 ZEN | Escaped elegantly. Re-subscribed only ONCE. Clippy respects you. |
+| 15–49 | 🎉 SIKE | Classic. Subscribed twice. Mom too. |
+| 50+ | 🦍 FERAL | HR hires you as **Chief Rage Officer**. You work here now. |
+
+### 😡 Rage Ladder
+`CALM 🧘 → ANNOYED 😒 → FUMING 😤 → FERAL 🦍 → CLIPPY HATER 👹` — plus a secret `CHEATER 🌟` rank. Psst: try the Konami code on your keyboard.
+
+### 📡 Only here
+Live **Spam News ticker**, ghost cursor that haunts the dodge arena, autocorrect that rewrites your breakup letter (`sorry` → `sowwy`), fullscreen hijack on first tap, and a deploy pipeline that ships your doom on a Friday.
 
 ## Basic Details
 ### Team Name: Solving Nothing
