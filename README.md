@@ -9,17 +9,17 @@
 
 **[▶ Click here to suffer](https://savio-shejo.github.io/unsubscribable/)** — no install, no signup, no mercy.
 
-| 🍪 Cookie Hell | 🥺 Mummy Guilt | 🏃 Fleeing Button | 🤖 Lying CAPTCHA | 💔 Letter Eater | 🔑 Absurd Password | 🫳 Hold Attack |
+| 🍪 Cookie Hell | 🥺 Guilt Trip | 🏃 Fleeing Button | 🤖 Lying CAPTCHA | 💔 Letter Eater | 🔑 Absurd Password | 🫳 Hold Attack |
 |---|---|---|---|---|---|---|
-| rejects respawn | STAY grows | proximity flee + ghost cursor | always wrong twice | `leave` → `stay` | emoji + Roman numeral + no "e" | Bua calls at 600ms |
+| rejects respawn | STAY grows | proximity flee + ghost cursor | always wrong twice | `hate` → `love` | emoji + Roman numeral + no "e" | Clippy attacks at 600ms |
 
 Beat it all? **PSYCH — that was the tutorial.** Prestige loop restarts harder, forever. 3 endings by rage: 🧘 ZEN / 🎉 SIKE / 🦍 FERAL (hired as Chief Rage Officer).
 
 ## Basic Details
-### Team Name: [Your Team Name]
+### Team Name: Solving Nothing
 ### Team Members
-- Team Lead: [Your Name] - [College]
-- (Solo build — add teammates here if any join)
+- Team Lead: Savio Shejo - Sahrdaya College of Engineering & Technology
+- (Solo build)
 
 ### Project Description
 A newsletter you can never leave. UNSUBSCRIBABLE is a rage-bait browser game: 7 scammy levels (respawning cookies, guilt-tripping modals, a fleeing button, a lying CAPTCHA, a letter-eating form, an absurd password, a hold-while-attacked button) ending in a fake deploy pipeline that gaslights you at 85% — then reveals it was the tutorial and restarts harder. There is no winning. Best loop time is tracked for speedrunners of suffering.
@@ -80,7 +80,7 @@ For Software:
 - `JOURNAL.md` has the build log (project-journal side quest)
 
 ## Team Contributions
-- [Your Name]: game design, all 7 levels, rage systems, README + demo
+- Savio Shejo: game design, all 7 levels, rage systems, README + demo
 - Built solo with an AI pair-programmer (planning + boilerplate), all cruelty decisions by a human
 
 ## Why it scores (judging: 60% creativity / 20% complexity / 20% cross-disciplinary)
