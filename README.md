@@ -30,11 +30,6 @@ For Software:
 - [Libraries used: none (WebAudio + Canvas + localStorage, all built into the browser)]
 - [Tools used: GitHub Pages (hosting), Win+Shift+S (screenshots)]
 
-For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
-
 ### Implementation
 For Software:
 # Installation
@@ -122,15 +117,6 @@ Once the finale is completed, the game randomly serves one of three rage-based e
 After reaching an ending, the player can Prestige, which resets the progression but makes the experience harder. The game loops back to the beginning with increased difficulty, creating a replayable cycle:
 
 Start → 7 Rage Levels → 85% Finale → 1 of 3 Endings → Prestige → Harder Loop 🔄
-
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
 
 # Build Photos
 <img width="1917" height="903" alt="435f865f-bea3-4128-a9dd-aeda0aaca09f" src="https://github.com/user-attachments/assets/366269a3-312f-47ee-9a50-88f79ff1f2ef" />
